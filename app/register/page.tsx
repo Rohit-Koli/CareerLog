@@ -36,10 +36,6 @@ export default function Page() {
     }catch(err){
       console.log(err);
     }
-    
-
-    
-    // alert(data.message || data.error);
   };
 
   return (
