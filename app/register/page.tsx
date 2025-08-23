@@ -25,13 +25,13 @@ export default function Page() {
     const data = await res.json();
     console.log(data);
     if (res.ok) {
-      toast.success("✅ User registered successfully!");
+      toast.success("User registered successfully!");
       setForm({ name: "", username: "", email: "", password: "" });
       setTimeout(() => {
         router.push("/login");
       },4500);
     } else {
-      toast.error(data.error || "❌ Registration Failed!");
+      toast.error(data.error || "Registration Failed!");
     }
     }catch(err){
       console.log(err);

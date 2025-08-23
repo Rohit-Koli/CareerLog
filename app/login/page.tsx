@@ -27,14 +27,14 @@ export default function Page() {
       console.log(data);
 
       if (res.ok) {
-        toast.success("✅ Login successful!");
+        toast.success("Login successful!");
         setForm({ username: "", password: "" });
 
         setTimeout(() => {
           router.push("/dashboard");
         }, 2000);
       } else {
-        toast.error(data.error || "❌ Invalid credentials!");
+        toast.error(data.error || "Invalid credentials!");
       }
     } catch (err) {
       console.error(err);
@@ -69,7 +69,9 @@ export default function Page() {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Password</label>
+                <label className="text-sm font-medium mb-2 block">
+                  Password
+                </label>
                 <input
                   name="password"
                   type="password"
