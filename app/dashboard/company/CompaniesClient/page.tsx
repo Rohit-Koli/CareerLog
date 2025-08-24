@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Company } from "@/types/Company";
 import CompanyCard from "@/app/components/CompanyCard/page";
-import AddCompanyForm from "@/app/dashboard/addCompany/page";
+import {toast} from "react-toastify";
 
 export default function Page({ initialCompanies }: { initialCompanies: Company[] }) {
   const [companies, setCompanies] = useState<Company[]>(initialCompanies);
@@ -12,8 +12,45 @@ export default function Page({ initialCompanies }: { initialCompanies: Company[]
     setCompanies((prev) => [...prev, newCompany]);
   };
 
-  const handleDelete = (id: string) => {
-    setCompanies((prev) => prev.filter((c) => c._id !== id));
+  const handleDelete = async (id: string) => {
+    const res=await fetch(`/api/companies/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    if(res.ok){
+      setCompanies(prev => prev.filter(c => c._id !== id));
+      const updatedCompany: Company = await res.json();
+      setCompanies((prev) =>
+      prev.map((c) => (c._id === id ? { ...c, ...updatedCompany } : c))
+      );
+      toast.success("Company deleted successfully");
+    }else{
+      const data=await res.json();
+      toast.error(data.error || "Failed to delete company");
+    }
+    // setCompanies((prev) => prev.filter((c) => c._id !== id));
+  };
+
+  const handleEdit = async (id: string, updates: Partial<Company>) => {
+    const res = await fetch(`/api/companies/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(updates),
+    });
+    if (res.ok) {
+      // const data = await res.json();
+      const updatedCompany: Company = await res.json();
+      setCompanies((prev) =>
+        prev.map((c) => (c._id === id ? { ...c, ...updatedCompany } : c))
+      );
+      toast.success("Company updated successfully");
+    }else{
+      const data = await res.json();
+      toast.error(data.error || "Failed to update company");
+    }
   };
 
   return (
@@ -31,7 +68,7 @@ export default function Page({ initialCompanies }: { initialCompanies: Company[]
               key={company._id}
               company={company}
               onDelete={() => company._id && handleDelete(company._id)}
-              onEdit={() => console.log("Edit", company._id)}
+              onEdit={() => company._id && handleEdit(company._id, { name: "Updated Name" })}
             />
           ))
         ) : (
