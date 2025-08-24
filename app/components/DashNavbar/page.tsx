@@ -48,7 +48,7 @@ export default function Page() {
                 </a>
               </li>
               <li>
-                <a className="" href="/dashboard/info">
+                <a className="" href="/dashboard/company">
                   Company Details
                 </a>
               </li>

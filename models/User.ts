@@ -1,7 +1,7 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
 // Company schema
-const companySchema = new Schema({
+const companySchema = new Schema<ICompany>({
   name: { type: String, required: true },
   hrName: String,
   hrEmail: String,
@@ -17,7 +17,7 @@ const companySchema = new Schema({
 });
 
 // Interfaces for TS
-export interface ICompany {
+export interface ICompany extends Document {
   name: string;
   hrName?: string;
   hrEmail?: string;
@@ -37,7 +37,7 @@ export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
-  companies: ICompany[];
+  companies: Types.DocumentArray<ICompany>; // ✅ Fix here
 }
 
 // User schema
@@ -50,6 +50,7 @@ const userSchema = new Schema<IUser>({
 });
 
 // Avoid model overwrite in Next.js hot reload
-const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>("User", userSchema);
+const User: Model<IUser> =
+  mongoose.models.User || mongoose.model<IUser>("User", userSchema);
 
 export default User;

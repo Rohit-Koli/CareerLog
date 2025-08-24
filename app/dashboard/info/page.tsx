@@ -7,7 +7,7 @@ import { Company } from "@/types/Company";
 import CompanyCard from "@/app/components/CompanyCard/page"
 import AddCompanyForm from "@/app/dashboard/addCompany/page";
 
-export default async function DashboardPage() {
+export default async function Page() {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
