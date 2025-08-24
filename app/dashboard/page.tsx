@@ -2,7 +2,7 @@ import AccessDeniedRedirect from "../AccessDenied/page";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { redirect } from "next/dist/server/api-utils";
-import Navbar from "../components/DashNavbar/page"
+import Navbar from "@/components/DashNavbar/page"
 
 export default async function Page() {
     const cookieStore = await cookies();

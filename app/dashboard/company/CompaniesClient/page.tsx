@@ -1,16 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Company } from "@/types/Company";
-import CompanyCard from "@/app/components/CompanyCard/page";
+import CompanyCard from "@/components/CompanyCard/page";
 import { toast } from "react-toastify";
 
-export default function Page({ initialCompanies }: { initialCompanies: Company[] }) {
-  const [companies, setCompanies] = useState<Company[]>(initialCompanies);
+interface CompaniesClientProps {
+  initialCompanies: Company[];
+}
 
-  const handleAdd = (newCompany: Company) => {
-    setCompanies((prev) => [...prev, newCompany]);
-  };
+export default function CompaniesClient({ initialCompanies }: CompaniesClientProps) {
+  const [companies, setCompanies] = useState<Company[]>(initialCompanies || []);
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      const res = await fetch("/api/companies", {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCompanies(data.companies);
+      } else {
+        toast.error("Failed to load companies");
+      }
+    };
+    fetchCompanies();
+  }, []);
 
   const handleDelete = async (id: string) => {
     const res = await fetch(`/api/companies/${id}`, {
@@ -18,7 +33,6 @@ export default function Page({ initialCompanies }: { initialCompanies: Company[]
       headers: { "Content-Type": "application/json" },
       credentials: "include",
     });
-
     if (res.ok) {
       setCompanies((prev) => prev.filter((c) => c._id !== id));
       toast.success("Company deleted successfully");
@@ -35,7 +49,6 @@ export default function Page({ initialCompanies }: { initialCompanies: Company[]
       credentials: "include",
       body: JSON.stringify(updates),
     });
-
     if (res.ok) {
       const updatedCompany: Company = await res.json();
       setCompanies((prev) =>
@@ -52,18 +65,14 @@ export default function Page({ initialCompanies }: { initialCompanies: Company[]
     <div className="p-6">
       <h1 className="text-3xl font-bold text-center mb-6">My Companies</h1>
 
-      {/* Companies List */}
       <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {companies.length > 0 ? (
           companies.map((company) => (
             <CompanyCard
               key={company._id}
               company={company}
-              onDelete={() => company._id && handleDelete(company._id)}
-              // onEdit={(updates: Partial<Company>) =>
-              //   company._id && handleEdit(company._id, updates)
-              // }
-              onEdit={handleEdit}
+              onDelete={() => handleDelete(company._id!)}
+              onEdit={(id: string, updates: Partial<Company>) => handleEdit(id, updates)}
             />
           ))
         ) : (

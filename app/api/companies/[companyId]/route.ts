@@ -34,7 +34,7 @@ export async function DELETE(
     if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
     return NextResponse.json({ message: "Company deleted successfully" }, { status: 200 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -87,7 +87,7 @@ export async function PUT(
 
     const updatedCompany = user.companies.id(companyId);
     return NextResponse.json(updatedCompany, { status: 200 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }

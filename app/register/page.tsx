@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Navbar from "../components/Navbar/page";
+import Navbar from "@/components/Navbar/page";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";

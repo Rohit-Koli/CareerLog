@@ -1,6 +1,5 @@
 import React from "react";
-import Link from "next/link";
-import Navbar from "../components/DashNavbar/page"
+import Navbar from "@/components/DashNavbar/page"
 
 export default function DashboardLayout({
   children,

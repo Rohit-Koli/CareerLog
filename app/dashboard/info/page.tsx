@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import AccessDeniedRedirect from "@/app/AccessDenied/page";
 import jwt from "jsonwebtoken";
 import { Company } from "@/types/Company";
-import CompanyCard from "@/app/components/CompanyCard/page"
+import CompanyCard from "@/components/CompanyCard/page";
 import AddCompanyForm from "@/app/dashboard/addCompany/page";
 
 export default async function Page() {

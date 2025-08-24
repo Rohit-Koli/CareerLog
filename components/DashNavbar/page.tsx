@@ -1,10 +1,12 @@
 import Profile from "@/public/profile.jpg";
+import Link from "next/link";
+import Image from "next/image";
 export default function Page() {
   return (
     <>
       <div className="navbar bg-base-100 shadow-sm">
         <div className="flex-1">
-          <a className="btn btn-ghost text-xl rounded-2xl" href="/dashboard">CareerLog</a>
+          <Link className="btn btn-ghost text-xl rounded-2xl" href="/dashboard">CareerLog</Link>
         </div>
         <div className="flex gap-2">
             {/* Search Button Input */}
@@ -35,7 +37,7 @@ export default function Page() {
               className="btn btn-ghost btn-circle avatar"
             >
               <div className="w-10 rounded-full">
-                <img alt="Tailwind CSS Navbar component" src={Profile.src} />
+                <Image alt="Tailwind CSS Navbar component" width={40} height={40} src={Profile.src} />
               </div>
             </div>
             <ul
@@ -43,22 +45,22 @@ export default function Page() {
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
             >
               <li>
-                <a className="justify-between" href="/dashboard/profile">
+                <Link className="justify-between" href="/dashboard/profile">
                   Profile
-                </a>
+                </Link>
               </li>
               <li>
-                <a className="" href="/dashboard/company">
+                <Link className="" href="/dashboard/company">
                   Company Details
-                </a>
+                </Link>
               </li>
               <li>
-                <a className="" href="/dashboard/addCompany">
+                <Link className="" href="/dashboard/addCompany">
                   Add Company Details
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/logout">Logout</a>
+                <Link href="/logout">Logout</Link>
               </li>
             </ul>
           </div>
