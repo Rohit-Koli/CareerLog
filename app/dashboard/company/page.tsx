@@ -1,46 +1,112 @@
-import { cookies } from "next/headers";
-import AccessDeniedRedirect from "@/app/AccessDenied/page";
-import jwt from "jsonwebtoken";
-import CompaniesClient from "./CompaniesClient/page";
+"use client";
 
-export default async function Page() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Company } from "@/types/Company";
+import CompanyCard from "@/components/CompanyCard/page";
+import AddCompanyForm from "@/app/dashboard/addCompany/AddCompanyForm";
 
-  if (!token) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <AccessDeniedRedirect />
-      </div>
-    );
-  }
+export default function CompaniesClient() {
+  const [companies, setCompanies] = useState<Company[]>([]);
 
-  try {
-    jwt.verify(token, process.env.JWT_SECRET!);
-    const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  // Fetch companies on mount
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const res = await fetch("/api/companies", {
+          credentials: "include", // send cookies for auth
+        });
 
-    // 👇 Forward cookies (important!)
-    const res = await fetch(`${API_URL}/api/companies`, {
-      cache: "no-store",
-      headers: {
-        Cookie: `token=${token}`,
-      },
-    });
+        if (!res.ok) throw new Error("Failed to fetch companies");
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch companies: ${res.status}`);
+        const data = await res.json();
+        setCompanies(data.companies || []);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to load companies");
+      }
+    };
+
+    fetchCompanies();
+  }, []);
+
+  // Handle adding a new company
+  const handleAdd = (newCompany: Company) => {
+    setCompanies((prev) => [newCompany, ...prev]);
+  };
+
+  // Handle deleting a company
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/companies/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to delete company");
+      }
+
+      setCompanies((prev) => prev.filter((c) => c._id !== id));
+      toast.success("Company deleted successfully");
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Error deleting company");
     }
+  };
 
-    const data = await res.json();
+  // Handle editing a company
+  const handleEdit = async (id: string, updates: Partial<Company>) => {
+    try {
+      const res = await fetch(`/api/companies/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(updates),
+      });
 
-    return <CompaniesClient initialCompanies={data.companies || []} />;
-  } catch (err) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <h1 className="text-2xl font-bold">
-          Invalid or expired token. Please log in again.
-        </h1>
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to update company");
+      }
+
+      const updatedCompany: Company = await res.json();
+      setCompanies((prev) =>
+        prev.map((c) => (c._id === id ? { ...c, ...updatedCompany } : c))
+      );
+      toast.success("Company updated successfully");
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Error updating company");
+    }
+  };
+
+  return (
+    <div className="p-6">
+      <h1 className="text-3xl font-bold text-center mb-6">My Companies</h1>
+
+      {/* Add Company Form */}
+      <AddCompanyForm onAdd={handleAdd} />
+
+      {/* Companies List */}
+      <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-6">
+        {companies.length > 0 ? (
+          companies.map((company) => (
+            <CompanyCard
+              key={company._id}
+              company={company}
+              onDelete={() => handleDelete(company._id!)}
+              onEdit={(id: string, updates: Partial<Company>) =>
+                handleEdit(id, updates)
+              }
+            />
+          ))
+        ) : (
+          <p className="text-center mt-8 text-gray-500">No companies found</p>
+        )}
       </div>
-    );
-  }
+    </div>
+  );
 }

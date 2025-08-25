@@ -1,5 +1,4 @@
 "use client";
-// Add Company Page Inside the Dashboard
 import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -9,7 +8,8 @@ interface Props {
   onAdd?: (company: Company) => void;
 }
 
-export default function Page({ onAdd }: Props) {
+export default function AddCompanyForm({ onAdd }: Props) {
+// export default function AddCompanyForm({ onAdd }: Props) {
   const [form, setForm] = useState<Company>({
     name: "",
     hrName: "",
@@ -31,14 +31,12 @@ export default function Page({ onAdd }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       const res = await fetch("/api/companies", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-
       const data = await res.json();
       if (res.ok) {
         toast.success("Company added successfully!");

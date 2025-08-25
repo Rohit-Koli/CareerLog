@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
-export default function Page({ params }: { params: { companyId: string } }) {
+export default function Page() {
+  const params = useParams();
+  const companyId = params?.companyId; // dynamic route
+
   const [form, setForm] = useState({
     name: "",
     hrName: "",
@@ -28,11 +31,11 @@ export default function Page({ params }: { params: { companyId: string } }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await fetch(`/api/company/${params.companyId}`, {
+    const res = await fetch(`/api/company/${companyId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
-      credentials: "include", // ✅ ensures cookies (JWT) are sent
+      credentials: "include",
     });
 
     if (res.ok) {

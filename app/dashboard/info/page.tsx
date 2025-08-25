@@ -5,7 +5,7 @@ import AccessDeniedRedirect from "@/app/AccessDenied/page";
 import jwt from "jsonwebtoken";
 import { Company } from "@/types/Company";
 import CompanyCard from "@/components/CompanyCard/page";
-import AddCompanyForm from "@/app/dashboard/addCompany/page";
+import AddCompanyForm from "@/app/dashboard/addCompany/AddCompanyForm";
 
 export default async function Page() {
   const cookieStore = await cookies();

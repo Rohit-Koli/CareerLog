@@ -5,21 +5,15 @@ import { Company } from "@/types/Company";
 import CompanyCard from "@/components/CompanyCard/page";
 import { toast } from "react-toastify";
 
-interface CompaniesClientProps {
-  initialCompanies: Company[];
-}
-
-export default function CompaniesClient({ initialCompanies }: CompaniesClientProps) {
-  const [companies, setCompanies] = useState<Company[]>(initialCompanies || []);
+export default function CompaniesClient() {
+  const [companies, setCompanies] = useState<Company[]>([]);
 
   useEffect(() => {
     const fetchCompanies = async () => {
-      const res = await fetch("/api/companies", {
-        credentials: "include",
-      });
+      const res = await fetch("/api/companies", { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
-        setCompanies(data.companies);
+        setCompanies(data.companies || []);
       } else {
         toast.error("Failed to load companies");
       }
@@ -28,18 +22,9 @@ export default function CompaniesClient({ initialCompanies }: CompaniesClientPro
   }, []);
 
   const handleDelete = async (id: string) => {
-    const res = await fetch(`/api/companies/${id}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
-    if (res.ok) {
-      setCompanies((prev) => prev.filter((c) => c._id !== id));
-      toast.success("Company deleted successfully");
-    } else {
-      const data = await res.json();
-      toast.error(data.error || "Failed to delete company");
-    }
+    const res = await fetch(`/api/companies/${id}`, { method: "DELETE", credentials: "include" });
+    if (res.ok) setCompanies((prev) => prev.filter((c) => c._id !== id));
+    else toast.error("Failed to delete company");
   };
 
   const handleEdit = async (id: string, updates: Partial<Company>) => {
@@ -50,35 +35,25 @@ export default function CompaniesClient({ initialCompanies }: CompaniesClientPro
       body: JSON.stringify(updates),
     });
     if (res.ok) {
-      const updatedCompany: Company = await res.json();
-      setCompanies((prev) =>
-        prev.map((c) => (c._id === id ? { ...c, ...updatedCompany } : c))
-      );
-      toast.success("Company updated successfully");
-    } else {
-      const data = await res.json();
-      toast.error(data.error || "Failed to update company");
-    }
+      const updated: Company = await res.json();
+      setCompanies((prev) => prev.map((c) => (c._id === id ? updated : c)));
+    } else toast.error("Failed to update company");
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">My Companies</h1>
-
-      <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {companies.length > 0 ? (
-          companies.map((company) => (
-            <CompanyCard
-              key={company._id}
-              company={company}
-              onDelete={() => handleDelete(company._id!)}
-              onEdit={(id: string, updates: Partial<Company>) => handleEdit(id, updates)}
-            />
-          ))
-        ) : (
-          <p className="text-center mt-8 text-gray-500">No companies found</p>
-        )}
-      </div>
+    <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      {companies.length > 0 ? (
+        companies.map((c) => (
+          <CompanyCard
+            key={c._id}
+            company={c}
+            onDelete={() => handleDelete(c._id!)}
+            onEdit={(id, updates) => handleEdit(id, updates)}
+          />
+        ))
+      ) : (
+        <p className="text-center mt-8 text-gray-500">No companies found</p>
+      )}
     </div>
   );
 }
