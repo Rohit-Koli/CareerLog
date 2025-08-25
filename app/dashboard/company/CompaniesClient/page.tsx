@@ -27,18 +27,44 @@ export default function CompaniesClient() {
     else toast.error("Failed to delete company");
   };
 
+  // const handleEdit = async (id: string, updates: Partial<Company>) => {
+  //   const res = await fetch(`/api/companies/${id}`, {
+  //     method: "PUT",
+  //     headers: { "Content-Type": "application/json" },
+  //     credentials: "include",
+  //     body: JSON.stringify(updates),
+  //   });
+  //   if (res.ok) {
+  //     const updated: Company = await res.json();
+  //     setCompanies((prev) => prev.map((c) => (c._id === id ? updated : c)));
+  //   } else toast.error("Failed to update company");
+  // };
+
   const handleEdit = async (id: string, updates: Partial<Company>) => {
+  try {
     const res = await fetch(`/api/companies/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify(updates),
     });
-    if (res.ok) {
-      const updated: Company = await res.json();
-      setCompanies((prev) => prev.map((c) => (c._id === id ? updated : c)));
-    } else toast.error("Failed to update company");
-  };
+
+    if (!res.ok) {
+      const errorMsg = await res.text();
+      toast.error(errorMsg || "Failed to update company");
+      return;
+    }
+
+    const updated: Company = await res.json();
+    setCompanies((prev) =>
+      prev.map((c) => (c._id === id ? { ...c, ...updated } : c))
+    );
+    toast.success("Company updated successfully");
+  } catch (error) {
+    console.error("Update error:", error);
+    toast.error("Something went wrong while updating");
+  }
+};
 
   return (
     <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">

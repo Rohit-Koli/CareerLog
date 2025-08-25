@@ -39,7 +39,7 @@ export default function AddCompanyForm({ onAdd }: Props) {
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success("Company added successfully!");
+        // toast.success("Company added successfully!");
         onAdd && onAdd(data);
         setForm({
           name: "",

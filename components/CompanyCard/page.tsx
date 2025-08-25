@@ -1,7 +1,7 @@
 "use client";
 
 import { Company } from "@/types/Company";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface CompanyCardProps {
   company: Company;
@@ -26,6 +26,22 @@ export default function CompanyCard({ company, onDelete, onEdit }: CompanyCardPr
   const [status, setStatus] = useState(company.status || "");
   const [address, setAddress] = useState(company.address || "");
 
+  // 🔹 Keep local state in sync with parent `company` (fix for instant update after save)
+  useEffect(() => {
+    setName(company.name);
+    setIndustry(company.industry || "");
+    setHrName(company.hrName || "");
+    setHrEmail(company.hrEmail || "");
+    setContactNumber(company.contactNumber || "");
+    setWebsite(company.website || "");
+    setOpenedPositions(company.openedPositions || "");
+    setResponse(company.response || "");
+    setDescription(company.description || "");
+    setAnyConnections(company.anyConnections || "");
+    setStatus(company.status || "");
+    setAddress(company.address || "");
+  }, [company]);
+
   const handleSave = () => {
     if (onEdit && company._id) {
       onEdit(company._id, {
@@ -42,6 +58,23 @@ export default function CompanyCard({ company, onDelete, onEdit }: CompanyCardPr
         status,
         address
       });
+
+      // 🔹 Immediately reflect saved changes
+      Object.assign(company, {
+        name,
+        industry,
+        hrName,
+        hrEmail,
+        contactNumber,
+        website,
+        openedPositions,
+        response,
+        description,
+        anyConnections,
+        status,
+        address
+      });
+
       setIsEditing(false);
     }
   };

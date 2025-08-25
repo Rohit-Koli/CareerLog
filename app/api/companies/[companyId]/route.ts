@@ -85,7 +85,12 @@ export async function PUT(
 
     if (!user) return NextResponse.json({ error: "User or Company not found" }, { status: 404 });
 
-    const updatedCompany = user.companies.id(companyId);
+    const updatedCompany = user.companies.find(
+      (c: any) => c._id.toString() === companyId
+    );
+    if (!updatedCompany) {
+      return NextResponse.json({ error: "Company not found" }, { status: 404 });
+    }
     return NextResponse.json(updatedCompany, { status: 200 });
   } catch (err: unknown) {
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });

@@ -37,7 +37,7 @@ export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
-  companies: Types.DocumentArray<ICompany>; // ✅ Fix here
+  companies: ICompany[];
 }
 
 // User schema

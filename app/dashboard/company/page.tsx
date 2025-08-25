@@ -32,8 +32,31 @@ export default function CompaniesClient() {
   }, []);
 
   // Handle adding a new company
-  const handleAdd = (newCompany: Company) => {
-    setCompanies((prev) => [newCompany, ...prev]);
+  const handleAdd =async (newCompany: Company) => {
+    // setCompanies((prev) => [newCompany, ...prev]);
+    try {
+    const res = await fetch("/api/companies", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(newCompany),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || "Failed to add company");
+    }
+
+    const savedCompany: Company = await res.json();
+
+    // ✅ only add company returned by backend (with _id)
+    setCompanies((prev) => [savedCompany, ...prev]);
+
+    toast.success("Company added successfully");
+  } catch (err: any) {
+    console.error(err);
+    toast.error(err.message || "Error adding company");
+  }
   };
 
   // Handle deleting a company
@@ -93,9 +116,9 @@ export default function CompaniesClient() {
       {/* Companies List */}
       <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-6">
         {companies.length > 0 ? (
-          companies.map((company) => (
+          companies.map((company,index) => (
             <CompanyCard
-              key={company._id}
+              key={company._id || index}
               company={company}
               onDelete={() => handleDelete(company._id!)}
               onEdit={(id: string, updates: Partial<Company>) =>
