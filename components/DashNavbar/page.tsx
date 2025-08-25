@@ -1,4 +1,4 @@
-import Profile from "@/public/profile.jpg";
+// import Profile from "@/public/profile.jpg";
 import Link from "next/link";
 import Image from "next/image";
 export default function Page() {
@@ -37,7 +37,7 @@ export default function Page() {
               className="btn btn-ghost btn-circle avatar"
             >
               <div className="w-10 rounded-full">
-                <Image alt="Tailwind CSS Navbar component" width={40} height={40} src={Profile.src} />
+                <Image alt="Tailwind CSS Navbar component" width={40} height={40} src='/profile.jpg' />
               </div>
             </div>
             <ul
